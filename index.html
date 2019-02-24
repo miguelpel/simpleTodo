@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <style>
+        .is-done {
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.4.1/umd/react.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.4.1/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.0/redux.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-redux/5.0.7/react-redux.js"></script> -->
+
+    <script type="text/babel">
+
+class TodoList extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state={
+            input: "",
+            todos: []
+        }
+    }
+    
+    addTodo = (event) => {
+        const {todos, input} =  this.state
+        if (input !== "") {
+            const item = {
+                id:todos.length,
+                completed: false,
+                content: input 
+            }
+            let newTodos = [...todos]
+            newTodos.push(item)
+            this.setState({
+                todos: newTodos,
+                input: ""
+            })
+        }
+        event.preventDefault()
+    }
+    
+    addInput = (event) => {
+        this.setState({
+            input: event.target.value
+        })
+    }
+    
+    crossItem = (id) => {
+        const {todos} = this.state
+        const newTodos = [...todos]
+        newTodos[id].completed = newTodos[id].completed ? false : true
+        this.setState({
+            todos: newTodos
+        })
+    }
+    
+    
+    render() {
+        const {todos, input} = this.state
+        const items = []
+        let remaining = 0
+        const total = todos.length
+        todos.forEach((todo) => {
+            if (!todo.completed) {remaining++}
+            items.push(<li
+                        key={todo.id}
+                        id={todo.id}
+                        onClick={(evt) => this.crossItem(todo.id)}
+                        className={todo.completed ? "is-done" : ""}
+                        >{todo.content}</li>)})
+        return (
+                <div>
+                    <form onSubmit={(evt) => this.addTodo(evt)}>
+                        <input value={input} onChange={(evt) => this.addInput(evt)}/>
+                        <button type="submit">add</button>
+                    </form>
+                    <div>{`${remaining} remaining out of ${total} tasks`}</div>
+                    <ul>
+                        {[...items]}
+                    </ul>
+                </div>
+        );
+    }
+}
+
+    /////////// DOM RENDER
+    ReactDOM.render(
+        <TodoList />,
+      document.getElementById('root')
+    );
+  </script>
+</body>
+
+</html>
